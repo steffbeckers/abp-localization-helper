@@ -1,2 +1,1 @@
-# abp-localization-helper
-ABP Localization Helper
+# ABP Localization Helper
