@@ -18,7 +18,7 @@
     "commands": [
       {
         "command": "abp-localization-helper.helloWorld",
-        "title": "Hello World"
+        "title": "ABP Localization Helper: Hello World"
       }
     ]
   },
