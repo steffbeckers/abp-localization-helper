@@ -11,7 +11,7 @@ export async function activate(context: vscode.ExtensionContext) {
   await fetchLocalizations();
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("abp-localization-helper.fetchLocalizations", async () => {
+    vscode.commands.registerCommand("abp-localization-helper.refetchLocalizations", async () => {
       await fetchLocalizations();
     })
   );

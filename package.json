@@ -17,8 +17,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "abp-localization-helper.fetchLocalizations",
-        "title": "ABP Localization Helper: Fetch localizations"
+        "command": "abp-localization-helper.refetchLocalizations",
+        "title": "ABP Localization Helper: Re-fetch localizations"
       },
       {
         "command": "abp-localization-helper.localizeString",
