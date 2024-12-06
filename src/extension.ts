@@ -132,6 +132,10 @@ async function localizeString() {
     return;
   }
 
+  const resourceName = await vscode.window.showInputBox({
+    prompt: "Add to specific resource?",
+  });
+
   // Prompt to confirm adding the localization
   const key = await vscode.window.showInputBox({
     prompt: "Enter a localization key for this string",
@@ -163,6 +167,9 @@ async function localizeString() {
 
   console.debug("values", values);
 
+  // TODO
+  // output.appendLine(values);
+
   // Add localization to API
   // try {
   //     for (const [culture, value] of Object.entries(values)) {
@@ -173,4 +180,8 @@ async function localizeString() {
   // } catch (error) {
   //     vscode.window.showErrorMessage(`Failed to add localization: ${error}`);
   // }
+
+  const edit = new vscode.WorkspaceEdit();
+  edit.replace(document.uri, wordRange, `'${resourceName}::${key}' | abpLocalization`);
+  await vscode.workspace.applyEdit(edit);
 }
