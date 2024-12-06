@@ -19,11 +19,19 @@
       {
         "command": "abp-localization-helper.fetchLocalizations",
         "title": "ABP Localization Helper: Fetch localizations"
+      },
+      {
+        "command": "abp-localization-helper.localizeString",
+        "title": "ABP Localization Helper: Localize String"
       }
     ],
     "configuration": {
       "title": "ABP Localization Helper",
       "properties": {
+        "abp-localization-helper.activeCultureName": {
+          "type": "string",
+          "default": "en"
+        },
         "abp-localization-helper.apiUrl": {
           "type": "string"
         },
@@ -32,7 +40,10 @@
           "default": [
             "en",
             "nl"
-          ]
+          ],
+          "items": {
+            "type": "string"
+          }
         },
         "abp-localization-helper.defaultResourceName": {
           "type": "string"
