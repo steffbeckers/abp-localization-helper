@@ -22,7 +22,7 @@
       },
       {
         "command": "abp-localization-helper.localizeString",
-        "title": "ABP Localization Helper: Localize String"
+        "title": "ABP Localization Helper: Localize string"
       }
     ],
     "configuration": {
