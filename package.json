@@ -27,16 +27,15 @@
         "abp-localization-helper.apiUrl": {
           "type": "string"
         },
-        "abp-localization-helper.cultures": {
+        "abp-localization-helper.cultureNames": {
           "type": "array",
           "default": [
             "en",
             "nl"
           ]
         },
-        "abp-localization-helper.defaultCulture": {
-          "type": "string",
-          "default": "en"
+        "abp-localization-helper.defaultResourceName": {
+          "type": "string"
         }
       }
     }
