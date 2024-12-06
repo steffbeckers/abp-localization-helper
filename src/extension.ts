@@ -1,10 +1,11 @@
 import * as vscode from "vscode";
 import { fetchLocalizationData } from "./api";
 
+const output = vscode.window.createOutputChannel("ABP Localization Helper");
 var localizationsByCulture: Record<string, Record<string, string>> = {};
 
 export async function activate(context: vscode.ExtensionContext) {
-  console.log("ABP Localization Helper active");
+  output.appendLine("Extension activated");
 
   await fetchLocalizations();
 
@@ -16,7 +17,7 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-  console.log("ABP Localization Helper inactive");
+  output.appendLine("Extension deactivated");
 }
 
 async function fetchLocalizations() {
@@ -55,6 +56,8 @@ async function fetchLocalizations() {
     }
 
     console.debug("localizationsByCulture", localizationsByCulture);
+
+    output.appendLine("Localizations fetched");
   } catch (error) {
     vscode.window.showErrorMessage(`${error instanceof Error ? error.message : error}`);
   }
