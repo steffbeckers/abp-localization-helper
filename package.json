@@ -2,6 +2,7 @@
   "name": "abp-localization-helper",
   "displayName": "ABP Localization Helper",
   "description": "Visual Studio Code extension to help localize ABP framework projects.",
+  "repository": "https://github.com/steffbeckers/abp-localization-helper",
   "version": "1.0.0",
   "engines": {
     "vscode": "^1.95.0"
