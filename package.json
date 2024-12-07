@@ -5,7 +5,7 @@
   "repository": "https://github.com/steffbeckers/abp-localization-helper",
   "publisher": "steffbeckers",
   "author": "Steff Beckers <steff@steffbeckers.eu>",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "engines": {
     "vscode": "^1.95.0"
   },
