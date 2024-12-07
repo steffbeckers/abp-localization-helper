@@ -1,9 +1,11 @@
 import * as vscode from "vscode";
 import { fetchLocalizationData } from "./api";
 import { toPascalCase } from "./util";
+import { updateResourceLocalization } from "./fs";
 
 const output = vscode.window.createOutputChannel("ABP Localization Helper");
-var localizationsByCulture: Record<string, Record<string, string>> = {};
+let localizationsByCulture: Record<string, Record<string, string>> = {};
+let resourceName: string | undefined;
 
 export async function activate(context: vscode.ExtensionContext) {
   output.appendLine("Extension activated");
@@ -61,8 +63,6 @@ async function fetchLocalizations() {
         {}
       );
     }
-
-    console.debug("localizationsByCulture", localizationsByCulture);
 
     output.appendLine("Localizations fetched");
 
@@ -132,8 +132,9 @@ async function localizeString() {
     return;
   }
 
-  const resourceName = await vscode.window.showInputBox({
+  resourceName = await vscode.window.showInputBox({
     prompt: "Add to specific resource?",
+    value: resourceName,
   });
 
   // Prompt to confirm adding the localization
@@ -165,23 +166,30 @@ async function localizeString() {
     }
   }
 
-  console.debug("values", values);
+  try {
+    const defaultResourceName = config.get<string>("defaultResourceName");
 
-  // TODO
-  // output.appendLine(values);
+    for (const [culture, value] of Object.entries(values)) {
+      await updateResourceLocalization(
+        (resourceName !== "" ? resourceName : defaultResourceName) ?? "",
+        culture,
+        key,
+        value
+      );
+    }
 
-  // Add localization to API
-  // try {
-  //     for (const [culture, value] of Object.entries(values)) {
-  //         await addLocalizationToAPI(apiUrl, culture, key, value);
-  //     }
+    const edit = new vscode.WorkspaceEdit();
+    edit.replace(document.uri, wordRange, `'${resourceName}::${key}' | abpLocalization`);
+    await vscode.workspace.applyEdit(edit);
 
-  //     vscode.window.showInformationMessage(`Localization added for key '${key}' across all cultures.`);
-  // } catch (error) {
-  //     vscode.window.showErrorMessage(`Failed to add localization: ${error}`);
-  // }
-
-  const edit = new vscode.WorkspaceEdit();
-  edit.replace(document.uri, wordRange, `'${resourceName}::${key}' | abpLocalization`);
-  await vscode.workspace.applyEdit(edit);
+    vscode.window.showInformationMessage(
+      `Localization added for resource '${
+        resourceName !== "" ? resourceName : defaultResourceName
+      }' and key '${key}'.`
+    );
+  } catch (error) {
+    vscode.window.showErrorMessage(
+      `Failed to add localization: ${error instanceof Error ? error.message : error}`
+    );
+  }
 }
