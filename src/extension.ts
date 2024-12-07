@@ -167,8 +167,8 @@ async function localizeString() {
   }
 
   try {
+    // Update localization resource in backend code
     const defaultResourceName = config.get<string>("defaultResourceName");
-
     for (const [culture, value] of Object.entries(values)) {
       await updateResourceLocalization(
         (resourceName !== "" ? resourceName : defaultResourceName) ?? "",
@@ -178,6 +178,10 @@ async function localizeString() {
       );
     }
 
+    // Re-fetch localization after adding a new localization key
+    await fetchLocalizations();
+
+    // Update the string to the localization key
     const edit = new vscode.WorkspaceEdit();
     edit.replace(document.uri, wordRange, `'${resourceName}::${key}' | abpLocalization`);
     await vscode.workspace.applyEdit(edit);
