@@ -5,7 +5,7 @@ import { updateResourceLocalization } from "./fs";
 
 const output = vscode.window.createOutputChannel("ABP Localization Helper");
 let localizationsByCulture: Record<string, Record<string, string>> = {};
-let resourceName: string | undefined;
+let resourceName: string | undefined = "";
 
 export async function activate(context: vscode.ExtensionContext) {
   output.appendLine("Extension activated");
@@ -13,14 +13,20 @@ export async function activate(context: vscode.ExtensionContext) {
   await fetchLocalizations();
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("abp-localization-helper.refetchLocalizations", async () => {
-      await fetchLocalizations();
+    vscode.commands.registerCommand("abp-localization-helper.addLocalization", async () => {
+      await addLocalization();
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("abp-localization-helper.localizeString", async () => {
       await localizeString();
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("abp-localization-helper.refetchLocalizations", async () => {
+      await fetchLocalizations();
     })
   );
 }
@@ -183,7 +189,7 @@ async function localizeString() {
 
     // Update the string to the localization key
     const edit = new vscode.WorkspaceEdit();
-    edit.replace(document.uri, wordRange, `'${resourceName}::${key}' | abpLocalization`);
+    edit.replace(document.uri, wordRange, `'${resourceName}::${key}'`);
     await vscode.workspace.applyEdit(edit);
 
     vscode.window.showInformationMessage(
@@ -194,6 +200,72 @@ async function localizeString() {
   } catch (error) {
     vscode.window.showErrorMessage(
       `Failed to add localization: ${error instanceof Error ? error.message : error}`
+    );
+  }
+}
+
+async function addLocalization() {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showErrorMessage("No active editor found.");
+    return;
+  }
+
+  const document = editor.document;
+  const position = editor.selection.active;
+
+  // Detect key under the cursor
+  let wordRange = document.getWordRangeAtPosition(position, /'[^']*'/);
+  let fullKey = document.getText(wordRange).replace(/'/g, ""); // Remove quotes
+
+  if (!fullKey) {
+    fullKey =
+      (await vscode.window.showInputBox({
+        prompt: `Enter the new localization key.`,
+        value: `${resourceName}::`,
+      })) ?? "";
+  }
+
+  const fullKeyParts = fullKey.split("::");
+  resourceName = fullKeyParts[0];
+  const key = fullKeyParts[1];
+
+  if (!key) {
+    vscode.window.showErrorMessage("Invalid localization key format. Expected '[Resource]::Key'.");
+    return;
+  }
+
+  const config = vscode.workspace.getConfiguration("abp-localization-helper");
+  const cultureNames = config.get<string[]>("cultureNames") || [];
+  const activeCulture = config.get<string>("activeCulture");
+
+  // Prompt for translations for each culture
+  const newTranslations: Record<string, string> = {};
+  for (const culture of cultureNames) {
+    const currentValue =
+      localizationsByCulture[culture][fullKey] || (culture === activeCulture ? key : "");
+    const value = await vscode.window.showInputBox({
+      prompt: `Enter the localized value for culture '${culture}'`,
+      value: currentValue,
+    });
+
+    if (value) {
+      newTranslations[culture] = value;
+    }
+  }
+
+  // Update JSON files with new translations
+  try {
+    for (const [culture, value] of Object.entries(newTranslations)) {
+      await updateResourceLocalization(resourceName, culture, key, value);
+    }
+
+    vscode.window.showInformationMessage(
+      `Localizations added/updated for key '${key}' in resource '${resourceName}'.`
+    );
+  } catch (error) {
+    vscode.window.showErrorMessage(
+      `Failed to update localizations: ${error instanceof Error ? error.message : error}`
     );
   }
 }

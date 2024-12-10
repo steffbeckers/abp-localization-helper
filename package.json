@@ -20,12 +20,16 @@
   "contributes": {
     "commands": [
       {
-        "command": "abp-localization-helper.refetchLocalizations",
-        "title": "ABP Localization Helper: Re-fetch localizations"
+        "command": "abp-localization-helper.addLocalization",
+        "title": "ABP Localization Helper: Add localization"
       },
       {
         "command": "abp-localization-helper.localizeString",
         "title": "ABP Localization Helper: Localize string"
+      },
+      {
+        "command": "abp-localization-helper.refetchLocalizations",
+        "title": "ABP Localization Helper: Re-fetch localizations"
       }
     ],
     "configuration": {
